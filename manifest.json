@@ -2,7 +2,7 @@
   "name": "崇元福利社智慧核系統",
   "short_name": "福利社智慧核",
   "start_url": "./index.html",
-  "display": "standalone",
+  "display": "fullscreen",
   "background_color": "#ffffff",
   "theme_color": "#3f51b5",
   "icons": [
