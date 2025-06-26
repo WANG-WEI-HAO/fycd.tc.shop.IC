@@ -2,6 +2,7 @@
   "name": "崇元福利社智慧核系統",
   "short_name": "福利社智慧核",
   "start_url": "./index.html",
+  "description": "本崇元福利社智慧核系統已導入 Progressive Web App，可安裝至桌面使用。",
   "display": "fullscreen",
   "background_color": "#ffffff",
   "theme_color": "#3f51b5",
