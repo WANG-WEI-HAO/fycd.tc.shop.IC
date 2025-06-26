@@ -14,10 +14,17 @@
       margin: 0;
       padding: 2em;
       background: #f0f4f8;
+      display: flex; /* Use flexbox for centering */
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh; /* Ensure it takes full viewport height */
+      box-sizing: border-box; /* Include padding in height */
     }
     #message {
       font-size: 1.2em;
       color: #333;
+      margin-bottom: 1em; /* Add some space below message */
     }
     .spinner {
       margin: 2em auto;
@@ -31,6 +38,21 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+    .action-button {
+      background-color: #3f51b5;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+      margin-top: 1em; /* Space above the button */
+      text-decoration: none; /* For anchor tag if used */
+      display: inline-block; /* For anchor tag if used */
+    }
+    .action-button:hover {
+      background-color: #303f9f;
+    }
   </style>
   <script>
     const SITE_URL = "https://sites.google.com/view/fycd-tc-shop-pos/%E5%B4%87%E5%85%83%E7%A6%8F%E5%88%A9%E7%A4%BE%E6%99%BA%E6%85%A7%E6%A0%B8%E7%B3%BB%E7%B5%B1"; // 替換為你的 Google Site 網址
@@ -42,19 +64,35 @@
 
     window.addEventListener('load', () => {
       const msg = document.getElementById('message');
+      const spinner = document.querySelector('.spinner');
+      const body = document.body; // Get body to append button
 
-      if (isPWA()) {
-        msg.textContent = "App 正在啟動…";
-        window.location.href = SITE_URL;
-      } else {
+      if (!isPWA()) {
         msg.innerHTML = `
           👋 歡迎使用<br><br>
-          📲 <strong>請點選右上角選單 → 加入主畫面</strong> 安裝 App<br><br>
-          ⏳ 將在 20 秒後自動前往 Google Site…
+          📲 <strong>請點選右上角選單 → 加入主畫面</strong> 安裝 App<br>
+          將在<strong>20秒後自動跳轉</strong>網站<br>
+          或點擊下方按鈕立即前往網站。
         `;
-        setTimeout(() => {
+        spinner.style.display = 'none'; // Hide spinner for non-PWA
+        
+        const goToSiteButton = document.createElement('button');
+        goToSiteButton.className = 'action-button';
+        goToSiteButton.textContent = '立即前往網站';
+        goToSiteButton.onclick = () => {
           window.location.href = SITE_URL;
-        }, 20000);
+        };
+        body.appendChild(goToSiteButton);
+
+        // Optional: Keep a shorter timeout as a fallback
+        setTimeout(() => {
+          if (!document.hidden) { // Only redirect if tab is active
+            window.location.href = SITE_URL;
+          }
+        }, 20000); // Reduced to 20 seconds
+      } else {
+        msg.textContent = "App 正在啟動…";
+        window.location.href = SITE_URL;
       }
     });
 
