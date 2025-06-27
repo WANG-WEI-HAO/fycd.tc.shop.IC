@@ -3,123 +3,117 @@
 <head>
   <meta charset="UTF-8" />
   <title>崇元福利社智慧核系統</title>
+
+  <!--─ Viewport 與全螢幕 ─-->
   <meta name="viewport"
-      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,minimal-ui">
-<!-- iOS：啟用全螢幕 -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,minimal-ui">
+  <meta name="theme-color" content="#3f51b5">
+  <!-- iOS 全螢幕 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <!--─ SEO / PWA 基本設定 ─-->
+  <!--─ SEO / PWA ─-->
   <meta name="description" content="本崇元福利社智慧核系統已導入 Progressive Web App，可安裝至桌面使用。">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#3f51b5" />
-  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png">
 
-  <!--─ Open Graph (LINE / FB / Discord 預覽) ─-->
+  <!--─ OG 預覽 ─-->
   <meta property="og:title"       content="崇元福利社智慧核系統">
   <meta property="og:description" content="開啟本系統，啟用智慧功能">
   <meta property="og:image"       content="https://wang-wei-hao.github.io/fycd.tc.shop.IntelligentCore/icons/icon-512.png">
   <meta property="og:url"         content="https://wang-wei-hao.github.io/fycd.tc.shop.IntelligentCore/">
 
-  <!--─ 簡易樣式 ─-->
+  <!--─ 核心樣式 ─-->
   <style>
-    body{
-      font-family:sans-serif;text-align:center;margin:0;padding:2em;
-      background:#f0f4f8;display:flex;flex-direction:column;
-      justify-content:center;align-items:center;min-height:100vh;box-sizing:border-box;
+    /* 全程禁用橡皮筋回彈與縮放 ──*/
+    html,body{
+      overscroll-behavior: none;
+      touch-action: none;
+      overflow:hidden;
+      margin:0;padding:2em;
+      font-family:sans-serif;
+      background:#f0f4f8;
+      display:flex;flex-direction:column;justify-content:center;align-items:center;
+      min-height:100vh;box-sizing:border-box;
     }
-    #message{font-size:1.2em;color:#333;margin-bottom:1em;}
+    #message{font-size:1.2em;color:#333;margin-bottom:1em}
     .spinner{width:48px;height:48px;margin:2em auto;border:6px solid #ccc;
-      border-top:6px solid #3f51b5;border-radius:50%;animation:spin 1s linear infinite;}
-    @keyframes spin{to{transform:rotate(360deg);}}
-    .action-button{
-      background:#3f51b5;color:#fff;padding:10px 20px;border:none;border-radius:5px;
-      font-size:1em;cursor:pointer;margin-top:1em;
-    }
-    .action-button:hover{background:#303f9f;}
+      border-top:6px solid #3f51b5;border-radius:50%;animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .action-button{background:#3f51b5;color:#fff;padding:10px 20px;border:none;border-radius:5px;
+      font-size:1em;cursor:pointer;margin-top:1em}
+    .action-button:hover{background:#303f9f}
   </style>
-
-  <script>
-    /*－－－－－－ 使用者要前往的 Google Site －－－－－－*/
-    const SITE_URL = "https://sites.google.com/view/fycd-tc-shop-pos/%E5%B4%87%E5%85%83%E7%A6%8F%E5%88%A9%E7%A4%BE%E6%99%BA%E6%85%A7%E6%A0%B8%E7%B3%BB%E7%B5%B1";
-
-    /*================== ① 跨瀏覽器 / 裝置偵測 ==================*/
-    function detectClient(){
-      const ua = navigator.userAgent;
-      const uaData = navigator.userAgentData || {};
-      const mobile = uaData.mobile ?? /Mobile|iPhone|Android/i.test(ua);
-
-      const isIOS      = /iPhone|iPad|iPod/i.test(ua) || (ua.includes('Mac') && 'ontouchend' in document);
-      const isAndroid  = /Android/i.test(ua);
-      const isDesktop  = !mobile && !isIOS && !isAndroid;
-
-      const isChrome   = /Chrome\/\d+/i.test(ua) && !/Edg\//.test(ua);
-      const isEdge     = /Edg\/\d+/i.test(ua);
-      const isFirefox  = /Firefox\/\d+/i.test(ua);
-      const isSafari   = /Safari\/\d+/i.test(ua) && !isChrome && !isEdge;
-
-      return {
-        isIOS, isAndroid, isDesktop,
-        isChrome, isEdge, isFirefox, isSafari,
-        inPWA: window.matchMedia('(display-mode: standalone)').matches ||
-               window.matchMedia('(display-mode: fullscreen)').matches ||
-               navigator.standalone === true
-      };
-    }
-
-    /*================== ② 載入後邏輯 ==================*/
-    window.addEventListener('load',()=>{
-      const client   = detectClient();
-      const msg      = document.getElementById('message');
-      const spinner  = document.querySelector('.spinner');
-      const body     = document.body;
-
-      /*── 已安裝（PWA）→ 立即跳轉 ──*/
-      if(client.inPWA){
-        msg.textContent='App 正在啟動…';
-        window.location.href = SITE_URL;
-        return;
-      }
-
-      /*── 未安裝：顯示各瀏覽器提示 ──*/
-      let hint='📲 建議安裝至桌面，享受全螢幕體驗。';
-      if(client.isIOS && client.isSafari){
-        hint='📲 在 Safari 底部「分享」→『加入主畫面』安裝。';
-      }else if(client.isAndroid && (client.isChrome||client.isEdge)){
-        hint='📲 點網址列右側「安裝圖示」或選單「加入主畫面」。';
-      }else if(client.isDesktop && (client.isChrome||client.isEdge)){
-        hint='💻 在網址列右側「安裝」圖示可安裝此 App。';
-      }else if(client.isFirefox){
-        hint='🦊 Firefox 可用「⋮ 選單→安裝」或手動加入書籤。';
-      }
-
-      msg.innerHTML = `
-        👋 歡迎使用<br><br>${hint}<br>
-        將在<strong>20 秒</strong>後自動跳轉網站，<br>
-        或點擊下方按鈕立即前往。
-      `;
-      spinner.style.display='none';
-
-      /*──「立即前往」按鈕──*/
-      const goBtn=document.createElement('button');
-      goBtn.className='action-button';
-      goBtn.textContent='立即前往網站';
-      goBtn.onclick=()=>window.location.href=SITE_URL;
-      body.appendChild(goBtn);
-
-      /*── 20 秒自動跳轉（仍在前景才執行）──*/
-      setTimeout(()=>{ if(!document.hidden) window.location.href=SITE_URL; },20000);
-    });
-
-    /*================== ③ Service Worker 註冊 ==================*/
-    if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('service-worker.js');
-    }
-  </script>
 </head>
 <body>
   <div class="spinner"></div>
   <div id="message">🔧 正在載入頁面…</div>
+
+  <script>
+  /*－－ 目標網址 －－*/
+  const SITE_URL = "https://sites.google.com/view/fycd-tc-shop-pos/%E5%B4%87%E5%85%83%E7%A6%8F%E5%88%A9%E7%A4%BE%E6%99%BA%E6%85%A7%E6%A0%B8%E7%B3%BB%E7%B5%B1";
+
+  /*－－ 瀏覽器 / 裝置偵測 －－*/
+  function detectClient(){
+    const ua = navigator.userAgent;
+    const isIOS   = /iPhone|iPad|iPod/i.test(ua)|| (ua.includes('Mac') && 'ontouchend' in document);
+    const isAnd   = /Android/i.test(ua);
+    const isChr   = /Chrome\/\d+/i.test(ua)&&!ua.includes('Edg/');
+    const isEdg   = /Edg\/\d+/i.test(ua);
+    const isFx    = /Firefox\/\d+/i.test(ua);
+    const isSaf   = /Safari\/\d+/i.test(ua)&&!isChr&&!isEdg;
+    return {
+      isIOS,isAnd,isChr,isEdg,isFx,isSaf,
+      inPWA: matchMedia('(display-mode: standalone)').matches||
+             matchMedia('(display-mode: fullscreen)').matches||
+             navigator.standalone===true
+    };
+  }
+
+  /*－－ 進入瀏覽器全螢幕（非 PWA 時保險用）－－*/
+  function requestFull(){
+    const el=document.documentElement;
+    const req= el.requestFullscreen||el.webkitRequestFullscreen||el.mozRequestFullScreen||el.msRequestFullscreen;
+    if(req) req.call(el);
+  }
+
+  window.addEventListener('load',()=>{
+    const c = detectClient();
+    const msg=document.getElementById('message');
+    document.addEventListener('click',requestFull,{once:true}); // 首次點擊即嘗試全螢幕
+
+    /* 已安裝 → 直接跳 */
+    if(c.inPWA){
+      msg.textContent='App 正在啟動…';
+      window.location.href=SITE_URL;
+      return;
+    }
+
+    /* 安裝提示 */
+    let hint='📲 建議安裝至桌面，享受全螢幕體驗。';
+    if(c.isIOS&&c.isSaf)      hint='📲 在 Safari 底部「分享」→『加入主畫面』安裝。';
+    else if(c.isAnd&&(c.isChr||c.isEdg))
+                              hint='📲 點網址列右側「安裝圖示」或選單「加入主畫面」。';
+    else if(c.isFx)           hint='🦊 Firefox 可用「⋮ 選單→安裝」或手動加入書籤。';
+
+    msg.innerHTML=`👋 歡迎使用<br><br>${hint}<br>
+                   將在<strong>20 秒</strong>後自動跳轉網站，<br>
+                   或點擊下方按鈕立即前往。`;
+    document.querySelector('.spinner').style.display='none';
+
+    const btn=document.createElement('button');
+    btn.className='action-button';
+    btn.textContent='立即前往網站';
+    btn.onclick=()=>window.location.href=SITE_URL;
+    document.body.appendChild(btn);
+
+    setTimeout(()=>{ if(!document.hidden) window.location.href=SITE_URL; },20000);
+  });
+
+  /*－－ 註冊 SW －－*/
+  if('serviceWorker'in navigator){
+    navigator.serviceWorker.register('service-worker.js');
+  }
+  </script>
 </body>
 </html>
